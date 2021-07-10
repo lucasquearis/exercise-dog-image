@@ -1,30 +1,53 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, { Component } from 'react';
 import './App.css';
 
-function App() {
+class App extends Component {
+  constructor(props){
+    super(props);
+    this.state = {
+      randomDog: [],
+      loading: true,
+    }
+    this.fetchAPI = this.fetchAPI.bind(this);
+    this.handleClick = this.handleClick.bind(this);
+  }
+
+  fetchAPI = () => {
+    const URL = 'https://dog.ceo/api/breeds/image/random'
+    fetch(URL)
+      .then(response => response.json())
+      .then(data =>{
+        this.setState({randomDog: data.message, loading: false})
+      })
+  }
+
+  handleClick(){
+    this.setState({loading: true})
+    this.fetchAPI()
+  }
+
+  componentDidMount() {
+    this.fetchAPI()
+  }
+
+  render() {
+    const { randomDog, loading } = this.state
+    const loadingMessage = <p>Loading...</p>
+    const randomImage = <img
+    src={randomDog}
+    alt="cachorro aleatorio"
+    />
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={ logo } className="App-logo" alt="logo" />
-        <p>
-          Edit
-          <code>
-            src/App.js
-          </code>
-          and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      {loading ? loadingMessage : randomImage}
+      <div>
+        <button
+          onClick={this.handleClick}
+        >Random Dog Image!</button>
+      </div>
+    </>
   );
+  }
 }
 
 export default App;
